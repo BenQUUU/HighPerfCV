@@ -19,9 +19,21 @@ find_package(CUDAToolkit REQUIRED)
 find_package(OpenMP REQUIRED)
 
 add_executable(HighPerfCV
-        main.cpp
-        kernel.cu
-        kernel.cuh
+        src/main.cpp
+        include/IFilter.h
+        include/utils.h
+        include/FilterFactory.h
+        src/filter_factory.cpp
+        src/filters/grayscale/grayscale_base.cpp
+        src/filters/grayscale/grayscale_base.h
+        src/filters/grayscale/grayscale_omp.h
+        src/filters/grayscale/grayscale_omp.cpp
+        src/filters/grayscale/grayscale_avx.h
+        src/filters/grayscale/grayscale_avx.cpp
+        src/filters/grayscale/grayscale_kernel.cu
+        src/filters/grayscale/grayscale_kernel.h
+        src/filters/grayscale/grayscale_cuda.cpp
+        src/filters/grayscale/grayscale_cuda.h
 )
 
 set_target_properties(HighPerfCV PROPERTIES
