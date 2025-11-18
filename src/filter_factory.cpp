@@ -5,7 +5,10 @@
 #include "filters/grayscale/grayscale_base.h"
 #include "filters/grayscale/grayscale_omp.h"
 #include "filters/grayscale/grayscale_avx.h"
+
+#ifdef USE_CUDA
 #include "filters/grayscale/grayscale_cuda.h"
+#endif
 
 std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, OptimizationMode mode) {
     switch (filterType) {
@@ -17,8 +20,10 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
                     return std::make_unique<GrayscaleOpenMP>();
                 case OptimizationMode::AVX2:
                     return std::make_unique<GrayscaleAVX>();
+        #ifdef USE_CUDA
                 case OptimizationMode::CUDA:
                     return std::make_unique<GrayscaleCUDA>();
+        #endif
             }
             break;
     case FilterType::BRIGHTNESS_CONTRAST:
