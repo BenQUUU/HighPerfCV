@@ -6,18 +6,14 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/utility.hpp>
-#include <cuda_runtime.h>
+
+#ifdef USE_CUDA
+    #include <cuda_runtime.h>
+#endif
 
 #include "../include/IFilter.h"
 #include "../include/utils.h"
 #include "../include/FilterFactory.h"
-
-// void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, const std::string& filter_name, long long duration_ms) {
-//     cv::imshow("Input Image", inputImage);
-//     cv::imshow("Output Image - " + filter_name, outputImage);
-//     std::cout << "Filter: " << filter_name << ", Time taken: " << duration_ms << " ms" << std::endl;
-//     cv::waitKey(0);
-// }
 
 void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, const std::string& filter_name, long long duration_ms) {
     cv::Mat display_output;
@@ -31,7 +27,7 @@ void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, cons
     cv::Mat comparison_image;
     cv::hconcat(inputImage, display_output, comparison_image);
 
-    std::string text = filter_name + " | Time: " + std::to_string(duration_ms) + " ms";
+    const std::string text = filter_name + " | Time: " + std::to_string(duration_ms) + " ms";
     cv::putText(comparison_image, text, cv::Point(20, 40),
                 cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255, 0), 2);
 
@@ -45,19 +41,31 @@ int main(int argc, char** argv) {
     if (argc < 4) {
         std::cerr << "Error: Not enough arguments.\n";
         std::cerr << "Usage: " << argv[0] << " <input_image_path> <filter_type> <optimization_mode>\n";
-        std::cerr << "Example: " << argv[0] << " image.jpg GRAYSCALE BASE\n";
-        std::cerr << "Available filter types: GRAYSCALE, BRIGHTNESS_CONTRAST, GAUSSIAN_BLUR, MEDIAN\n";
-        std::cerr << "Available optimization modes: BASE, OPENMP, AVX2, CUDA\n";
         return -1;
     }
 
     bool has_avx2 = cv::checkHardwareSupport(CV_CPU_AVX2);
+
     int cuda_devices = 0;
-    cudaError_t cuda_status = cudaGetDeviceCount(&cuda_devices);
+    bool cuda_runtime_ok = false;
+
+#ifdef USE_CUDA
+    cudaError_t status = cudaGetDeviceCount(&cuda_devices);
+    if (status == cudaSuccess && cuda_devices > 0) {
+        cuda_runtime_ok = true;
+    } else {
+        cuda_devices = 0;
+    }
+#endif
 
     std::cout << "--- Hardware Detection ---" << std::endl;
     std::cout << "AVX2 support: " << (has_avx2 ? "YES" : "NO") << std::endl;
+
+#ifdef USE_CUDA
     std::cout << "Available CUDA devices: " << cuda_devices << std::endl;
+#else
+    std::cout << "CUDA support: DISABLED at compile time" << std::endl;
+#endif
     std::cout << "----------------------------" << std::endl;
 
     try {
@@ -66,11 +74,17 @@ int main(int argc, char** argv) {
         const OptimizationMode opt_mode = string_to_mode(argv[3]);
 
         if (opt_mode == OptimizationMode::AVX2 && !has_avx2) {
-            throw std::runtime_error("FATAL ERROR: AVX2 mode requested, but the processor does not support AVX2 instructions");
+            throw std::runtime_error("FATAL ERROR: AVX2 mode requested, but hardware does not support it.");
         }
 
-        if (opt_mode == OptimizationMode::CUDA && cuda_status) {
-            throw std::runtime_error("FATAL ERROR: CUDA mode requested, but no compatible NVIDIA device was found");
+        if (opt_mode == OptimizationMode::CUDA) {
+            #ifndef USE_CUDA
+                throw std::runtime_error("FATAL ERROR: CUDA mode requested, but application was compiled without CUDA support.");
+            #else
+                if (!cuda_runtime_ok) {
+                    throw std::runtime_error("FATAL ERROR: CUDA mode requested, but no compatible NVIDIA device found (or driver error).");
+                }
+            #endif
         }
 
         const cv::Mat input_img = cv::imread(image_path);
@@ -82,21 +96,24 @@ int main(int argc, char** argv) {
         std::cout << "Creating a filter...\n";
         const std::unique_ptr<IFilter> filter = FilterFactory::create_filter(filter_type, opt_mode);
 
+        if (!filter) {
+             throw std::runtime_error("Filter Factory returned null. Unknown filter type or mode?");
+        }
+
         const std::string filter_name = filter->get_name();
         std::cout << "Running the filter: " << filter_name << '\n';
 
         cv::Mat output_img;
 
         const auto start = std::chrono::high_resolution_clock::now();
-
         filter->process(input_img, output_img);
-
         const auto stop = std::chrono::high_resolution_clock::now();
-        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
+        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
         std::cout << " " << duration.count() << " ms\n";
 
         display_results(input_img, output_img, filter_name, duration.count());
+
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << '\n';
         return -1;
