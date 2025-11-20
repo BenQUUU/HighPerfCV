@@ -3,6 +3,7 @@
 #include <memory>
 #include <chrono>
 #include <stdexcept>
+#include <vector>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/utility.hpp>
@@ -40,7 +41,7 @@ void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, cons
 int main(int argc, char** argv) {
     if (argc < 4) {
         std::cerr << "Error: Not enough arguments.\n";
-        std::cerr << "Usage: " << argv[0] << " <input_image_path> <filter_type> <optimization_mode>\n";
+        std::cerr << "Usage: " << argv[0] << " <img_path> <FILTER> <MODE> [param1] [param2] ...\n";
         return -1;
     }
 
@@ -73,6 +74,8 @@ int main(int argc, char** argv) {
         const FilterType filter_type = string_to_filter(argv[2]);
         const OptimizationMode opt_mode = string_to_mode(argv[3]);
 
+        std::vector<std::string> extra_params;
+
         if (opt_mode == OptimizationMode::AVX2 && !has_avx2) {
             throw std::runtime_error("FATAL ERROR: AVX2 mode requested, but hardware does not support it.");
         }
@@ -87,6 +90,18 @@ int main(int argc, char** argv) {
             #endif
         }
 
+        for (int i = 4; i < argc; ++i) {
+            extra_params.emplace_back(argv[i]);
+        }
+
+        if (!extra_params.empty()) {
+            std::cout << "Additional parameters passed: ";
+            for (const auto& p : extra_params) {
+                std::cout << p << " ";
+            }
+            std::cout << '\n';
+        }
+
         const cv::Mat input_img = cv::imread(image_path);
         if (input_img.empty()) {
             throw std::runtime_error("Could not load image from path: " + image_path);
@@ -94,7 +109,7 @@ int main(int argc, char** argv) {
         std::cout << "Image loaded: " << image_path << " (" << input_img.cols << "x" << input_img.rows << ")" << '\n';
 
         std::cout << "Creating a filter...\n";
-        const std::unique_ptr<IFilter> filter = FilterFactory::create_filter(filter_type, opt_mode);
+        const std::unique_ptr<IFilter> filter = FilterFactory::create_filter(filter_type, opt_mode, extra_params);
 
         if (!filter) {
              throw std::runtime_error("Filter Factory returned null. Unknown filter type or mode?");
