@@ -52,6 +52,8 @@ set(SRCS
         src/filters/brightness/brightness_base.h
         src/filters/brightness/brightness_omp.h
         src/filters/brightness/brightness_omp.cpp
+        src/filters/brightness/brightness_avx.h
+        src/filters/brightness/brightness_avx.cpp
 )
 
 if(ENABLE_CUDA)

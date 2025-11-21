@@ -6,6 +6,7 @@
 #include "filters/grayscale/grayscale_base.h"
 #include "filters/grayscale/grayscale_omp.h"
 
+#include "filters/brightness/brightness_avx.h"
 #include "filters/brightness/brightness_base.h"
 #include "filters/brightness/brightness_omp.h"
 
@@ -50,6 +51,8 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
             return std::make_unique<BrightnessBase>(alpha, beta);
         case OptimizationMode::OPENMP:
             return std::make_unique<BrightnessOpenMP>(alpha, beta);
+        case OptimizationMode::AVX2:
+            return std::make_unique<BrightnessAVX>(alpha, beta);
         default:
             throw std::invalid_argument("Unknown optimization mode for Brightness filter");
         }
