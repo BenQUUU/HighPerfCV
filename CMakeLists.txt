@@ -62,6 +62,10 @@ if(ENABLE_CUDA)
             src/filters/grayscale/grayscale_kernel.h
             src/filters/grayscale/grayscale_cuda.cpp
             src/filters/grayscale/grayscale_cuda.h
+            src/filters/brightness/brightness_cuda.h
+            src/filters/brightness/brightness_cuda.cpp
+            src/filters/brightness/brightness_kernel.cu
+            src/filters/brightness/brightness_kernel.h
     )
 endif()
 

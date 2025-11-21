@@ -12,6 +12,7 @@
 
 #ifdef USE_CUDA
 #include "filters/grayscale/grayscale_cuda.h"
+#include "filters/brightness/brightness_cuda.h"
 #endif
 
 std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, OptimizationMode mode, const std::vector<std::string>& params) {
@@ -53,6 +54,10 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
             return std::make_unique<BrightnessOpenMP>(alpha, beta);
         case OptimizationMode::AVX2:
             return std::make_unique<BrightnessAVX>(alpha, beta);
+#ifdef USE_CUDA
+        case OptimizationMode::CUDA:
+            return std::make_unique<BrightnessCUDA>(alpha, beta);
+#endif
         default:
             throw std::invalid_argument("Unknown optimization mode for Brightness filter");
         }
