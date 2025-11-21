@@ -7,6 +7,7 @@
 #include "filters/grayscale/grayscale_omp.h"
 
 #include "filters/brightness/brightness_base.h"
+#include "filters/brightness/brightness_omp.h"
 
 #ifdef USE_CUDA
 #include "filters/grayscale/grayscale_cuda.h"
@@ -47,6 +48,8 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
         switch (mode) {
         case OptimizationMode::BASE:
             return std::make_unique<BrightnessBase>(alpha, beta);
+        case OptimizationMode::OPENMP:
+            return std::make_unique<BrightnessOpenMP>(alpha, beta);
         default:
             throw std::invalid_argument("Unknown optimization mode for Brightness filter");
         }
