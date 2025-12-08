@@ -10,6 +10,8 @@
 #include "filters/brightness/brightness_base.h"
 #include "filters/brightness/brightness_omp.h"
 
+#include "filters/gaussian_blur/gaussian_base.h"
+
 #ifdef USE_CUDA
 #include "filters/grayscale/grayscale_cuda.h"
 #include "filters/brightness/brightness_cuda.h"
@@ -63,9 +65,24 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
         }
     }
 
-    case FilterType::GAUSSIAN_BLUR:
-        // TODO: Zaimplementować, gdy klasy będą gotowe
-        break;
+    case FilterType::GAUSSIAN_BLUR: {
+        int k_size = 5;
+        float sigma = 1.0f;
+
+        try {
+            if (params.size() >= 1) k_size = std::stoi(params[0]);
+            if (params.size() >= 2) sigma = std::stof(params[1]);
+        } catch (...) {
+            throw std::invalid_argument("Bledne parametry dla Gaussian! Oczekiwano: int (rozmiar), float (sigma).");
+        }
+
+        switch (mode) {
+        case OptimizationMode::BASE:
+            return std::make_unique<GaussianBase>(k_size, sigma);
+        default:
+            throw std::runtime_error("Tryb niedostepny dla GaussianBlur");
+        }
+    }
 
     case FilterType::MEDIAN:
         // TODO: Zaimplementować, gdy klasy będą gotowe

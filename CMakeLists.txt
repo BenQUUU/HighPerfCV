@@ -54,6 +54,8 @@ set(SRCS
         src/filters/brightness/brightness_omp.cpp
         src/filters/brightness/brightness_avx.h
         src/filters/brightness/brightness_avx.cpp
+        src/filters/gaussian_blur/gaussian_base.cpp
+        src/filters/gaussian_blur/gaussian_base.h
 )
 
 if(ENABLE_CUDA)
