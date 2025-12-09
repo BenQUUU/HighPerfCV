@@ -11,6 +11,8 @@
 #include "filters/brightness/brightness_omp.h"
 
 #include "filters/gaussian_blur/gaussian_base.h"
+#include "filters/gaussian_blur/gaussian_omp.h"
+#include "filters/gaussian_blur/gaussian_avx.h"
 
 #ifdef USE_CUDA
 #include "filters/grayscale/grayscale_cuda.h"
@@ -73,14 +75,18 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
             if (params.size() >= 1) k_size = std::stoi(params[0]);
             if (params.size() >= 2) sigma = std::stof(params[1]);
         } catch (...) {
-            throw std::invalid_argument("Bledne parametry dla Gaussian! Oczekiwano: int (rozmiar), float (sigma).");
+            throw std::invalid_argument("Incorrect parameters for Gaussian! Expected: int (size), float (sigma)");
         }
 
         switch (mode) {
         case OptimizationMode::BASE:
             return std::make_unique<GaussianBase>(k_size, sigma);
+        case OptimizationMode::OPENMP:
+            return std::make_unique<GaussianOpenMP>(k_size, sigma);
+        case OptimizationMode::AVX2:
+            return std::make_unique<GaussianAVX>(k_size, sigma);
         default:
-            throw std::runtime_error("Tryb niedostepny dla GaussianBlur");
+            throw std::runtime_error("Unknown optimization mode for GaussianBlur");
         }
     }
 
