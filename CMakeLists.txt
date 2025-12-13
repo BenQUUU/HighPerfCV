@@ -74,6 +74,9 @@ set(SRCS
         src/filters/gaussian_blur/gaussian_base.h
         src/filters/gaussian_blur/gaussian_omp.cpp
         src/filters/gaussian_blur/gaussian_omp.h
+
+        src/filters/median/median_base.cpp
+        src/filters/median/median_base.h
 )
 
 if(ENABLE_CUDA)

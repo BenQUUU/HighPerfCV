@@ -11,6 +11,8 @@
 #include "filters/gaussian_blur/gaussian_base.h"
 #include "filters/gaussian_blur/gaussian_omp.h"
 
+#include "filters/median/median_base.h"
+
 #ifdef USE_AVX2
 #include "filters/gaussian_blur/gaussian_avx.h"
 #include "filters/brightness/brightness_avx.h"
@@ -27,19 +29,19 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
     switch (filterType) {
     case FilterType::GRAYSCALE:
         switch (mode) {
-        case OptimizationMode::BASE:
+    case OptimizationMode::BASE:
             return std::make_unique<GrayscaleBase>();
-        case OptimizationMode::OPENMP:
+    case OptimizationMode::OPENMP:
             return std::make_unique<GrayscaleOpenMP>();
 #ifdef USE_AVX2
-        case OptimizationMode::AVX2:
+    case OptimizationMode::AVX2:
             return std::make_unique<GrayscaleAVX>();
 #endif
 #ifdef USE_CUDA
-        case OptimizationMode::CUDA:
+    case OptimizationMode::CUDA:
             return std::make_unique<GrayscaleCUDA>();
 #endif
-        default:
+    default:
             throw std::invalid_argument("Unknown optimization mode for Grayscale filter");
         }
     case FilterType::BRIGHTNESS_CONTRAST: {
@@ -106,9 +108,23 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
         }
     }
 
-    case FilterType::MEDIAN:
-        break;
+    case FilterType::MEDIAN: {
+        int k_size = 3;
+
+        try {
+            if (!params.empty()) k_size = std::stoi(params[0]);
+        } catch (...) {
+            throw std::invalid_argument("Median requires a parameter int (kernel_size).");
+        }
+
+        switch (mode) {
+        case OptimizationMode::BASE:
+            return std::make_unique<MedianBase>(k_size);
+        default:
+            throw std::runtime_error("Unknown optimization mode for Median Filter");
+        }
     }
 
-    throw std::runtime_error("Unknown combination of filter type and optimization mode");
+        throw std::runtime_error("Unknown combination of filter type and optimization mode");
+    }
 }
