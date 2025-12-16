@@ -12,6 +12,7 @@
 #include "filters/gaussian_blur/gaussian_omp.h"
 
 #include "filters/median/median_base.h"
+#include "filters/median/median_omp.h"
 
 #ifdef USE_AVX2
 #include "filters/gaussian_blur/gaussian_avx.h"
@@ -120,6 +121,8 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
         switch (mode) {
         case OptimizationMode::BASE:
             return std::make_unique<MedianBase>(k_size);
+        case OptimizationMode::OPENMP:
+            return std::make_unique<MedianOpenMP>(k_size);
         default:
             throw std::runtime_error("Unknown optimization mode for Median Filter");
         }

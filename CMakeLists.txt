@@ -77,6 +77,9 @@ set(SRCS
 
         src/filters/median/median_base.cpp
         src/filters/median/median_base.h
+
+        src/filters/median/median_omp.cpp
+        src/filters/median/median_omp.h
 )
 
 if(ENABLE_CUDA)
