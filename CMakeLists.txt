@@ -143,6 +143,8 @@ if(IS_X86 AND ENABLE_AVX2)
                     src/filters/brightness/brightness_avx.cpp
                     src/filters/gaussian_blur/gaussian_avx.h
                     src/filters/gaussian_blur/gaussian_avx.cpp
+                    src/filters/median/median_avx.h
+                    src/filters/median/median_avx.cpp
             )
             message(STATUS "AVX2 optimizations enabled (GCC/Clang).")
         endif()
