@@ -16,34 +16,34 @@
 #include "../include/utils.h"
 #include "../include/FilterFactory.h"
 
-void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, const std::string& filter_name, long long duration_ms) {
-    cv::imshow("Input Image", inputImage);
-    cv::imshow("Output Image - " + filter_name, outputImage);
-    std::cout << "Filter: " << filter_name << ", Time taken: " << duration_ms << " ms" << std::endl;
-    cv::waitKey(0);
-}
-
 // void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, const std::string& filter_name, long long duration_ms) {
-//     cv::Mat display_output;
-//
-//     if (inputImage.channels() == 3 && outputImage.channels() == 1) {
-//         cv::cvtColor(outputImage, display_output, cv::COLOR_GRAY2BGR);
-//     } else {
-//         display_output = outputImage;
-//     }
-//
-//     cv::Mat comparison_image;
-//     cv::hconcat(inputImage, display_output, comparison_image);
-//
-//     const std::string text = filter_name + " | Time: " + std::to_string(duration_ms) + " ms";
-//     cv::putText(comparison_image, text, cv::Point(20, 40),
-//                 cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255, 0), 2);
-//
-//     cv::imshow("Comparison: Input vs. Output", comparison_image);
-//     std::cout << "Press any key to exit..." << '\n';
+//     cv::imshow("Input Image", inputImage);
+//     cv::imshow("Output Image - " + filter_name, outputImage);
+//     std::cout << "Filter: " << filter_name << ", Time taken: " << duration_ms << " ms" << std::endl;
 //     cv::waitKey(0);
-//     cv::destroyAllWindows();
 // }
+
+void display_results(const cv::Mat& inputImage, const cv::Mat& outputImage, const std::string& filter_name, long long duration_ms) {
+    cv::Mat display_output;
+
+    if (inputImage.channels() == 3 && outputImage.channels() == 1) {
+        cv::cvtColor(outputImage, display_output, cv::COLOR_GRAY2BGR);
+    } else {
+        display_output = outputImage;
+    }
+
+    cv::Mat comparison_image;
+    cv::hconcat(inputImage, display_output, comparison_image);
+
+    const std::string text = filter_name + " | Time: " + std::to_string(duration_ms) + " ms";
+    cv::putText(comparison_image, text, cv::Point(20, 40),
+                cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255, 0), 2);
+
+    cv::imshow("Comparison: Input vs. Output", comparison_image);
+    std::cout << "Press any key to exit..." << '\n';
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}
 
 int main(int argc, char** argv) {
     if (argc < 4) {
@@ -53,6 +53,7 @@ int main(int argc, char** argv) {
     }
 
     bool has_avx2 = cv::checkHardwareSupport(CV_CPU_AVX2);
+    bool has_neon = cv::checkHardwareSupport(CV_CPU_NEON);
 
     int cuda_devices = 0;
     bool cuda_runtime_ok = false;
@@ -66,15 +67,16 @@ int main(int argc, char** argv) {
     }
 #endif
 
-    std::cout << "--- Hardware Detection ---" << std::endl;
-    std::cout << "AVX2 support: " << (has_avx2 ? "YES" : "NO") << std::endl;
+    std::cout << "--- Hardware Detection ---" << '\n';
+    std::cout << "AVX2 support: " << (has_avx2 ? "YES" : "NO") << '\n';
+    std::cout << "NEON support: " << (has_neon ? "YES" : "NO") << '\n';
 
 #ifdef USE_CUDA
-    std::cout << "Available CUDA devices: " << cuda_devices << std::endl;
+    std::cout << "Available CUDA devices: " << cuda_devices << '\n';
 #else
-    std::cout << "CUDA support: DISABLED at compile time" << std::endl;
+    std::cout << "CUDA support: DISABLED at compile time" << '\n';
 #endif
-    std::cout << "----------------------------" << std::endl;
+    std::cout << "----------------------------" << '\n';
 
     try {
         const std::string image_path = argv[1];
@@ -85,6 +87,16 @@ int main(int argc, char** argv) {
 
         if (opt_mode == OptimizationMode::AVX2 && !has_avx2) {
             throw std::runtime_error("FATAL ERROR: AVX2 mode requested, but hardware does not support it.");
+        }
+
+        if (opt_mode == OptimizationMode::NEON) {
+            #ifndef USE_NEON
+                throw std::runtime_error("FATAL ERROR: NEON mode requested, but application was compiled without NEON support.");
+            #else
+                if (!has_neon) {
+                    throw std::runtime_error("FATAL ERROR: NEON mode requested, but hardware does not support it (x86 CPU?).");
+                }
+            #endif
         }
 
         if (opt_mode == OptimizationMode::CUDA) {

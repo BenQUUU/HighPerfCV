@@ -14,7 +14,8 @@ enum class OptimizationMode {
     BASE,
     OPENMP,
     AVX2,
-    CUDA
+    CUDA,
+    NEON
 };
 
 inline FilterType string_to_filter(const std::string& str) {
@@ -30,5 +31,6 @@ inline OptimizationMode string_to_mode(const std::string& str) {
     if (str == "OPENMP") return OptimizationMode::OPENMP;
     if (str == "AVX") return OptimizationMode::AVX2;
     if (str == "CUDA") return OptimizationMode::CUDA;
+    if (str == "NEON") return OptimizationMode::NEON;
     throw std::invalid_argument("Unknown optimization mode: " + str);
 }

@@ -155,6 +155,12 @@ if(IS_ARM AND ENABLE_NEON)
     if(NOT MSVC)
         target_compile_options(HighPerfCV PRIVATE -march=native -O3)
         target_compile_definitions(HighPerfCV PRIVATE USE_NEON)
+
+        target_sources(HighPerfCV PRIVATE
+            src/filters/grayscale/grayscale_neon.h
+            src/filters/grayscale/grayscale_neon.cpp
+        )
+
         message(STATUS "ARM NEON optimizations enabled (flags imply native arch).")
     endif()
 endif()
