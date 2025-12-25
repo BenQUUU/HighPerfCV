@@ -29,6 +29,7 @@
 #include "filters/brightness/brightness_cuda.h"
 #include "filters/gaussian_blur/gaussian_cuda.h"
 #include "filters/grayscale/grayscale_cuda.h"
+#include "filters/median/median_cuda.h"
 #endif
 
 std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, OptimizationMode mode, const std::vector<std::string>& params) {
@@ -135,6 +136,10 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
 #ifdef USE_AVX2
         case OptimizationMode::AVX2:
             return std::make_unique<MedianAVX>(k_size);
+#endif
+#ifdef USE_CUDA
+        case OptimizationMode::CUDA:
+            return std::make_unique<MedianCUDA>(k_size);
 #endif
         default:
             throw std::runtime_error("Unknown optimization mode for Median Filter");

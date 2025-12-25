@@ -96,6 +96,10 @@ if(ENABLE_CUDA)
             src/filters/gaussian_blur/gaussian_cuda.cpp
             src/filters/gaussian_blur/gaussian_kernel.cu
             src/filters/gaussian_blur/gaussian_kernel.h
+            src/filters/median/median_cuda.h
+            src/filters/median/median_cuda.cpp
+            src/filters/median/median_kernel.h
+            src/filters/median/median_kernel.cu
     )
 endif()
 
