@@ -141,6 +141,9 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
         }
     }
 
-        throw std::runtime_error("Unknown combination of filter type and optimization mode");
+    default:
+        break;
     }
+
+    throw std::runtime_error("Unknown combination of filter type and optimization mode");    
 }
