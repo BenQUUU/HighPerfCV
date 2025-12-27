@@ -81,10 +81,20 @@ make -j
 ## 🖥️ Usage
 
 # Syntax
+```bash
 ./HighPerfCV <image_path> <FILTER_TYPE> <MODE> [params...]
+```
 
 # Examples
+```bash
 ./HighPerfCV input.jpg GAUSSIAN_BLUR CUDA 5 1.0
+```
+```bash
 ./HighPerfCV photo.png GRAYSCALE NEON
+```
+```bash
 ./HighPerfCV frame.jpg MEDIAN AVX2 3
+```
+```bash
 ./HighPerfCV dark.jpg BRIGHTNESS OPENMP 1.5 20
+```
