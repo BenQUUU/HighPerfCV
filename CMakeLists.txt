@@ -163,6 +163,8 @@ if(IS_ARM AND ENABLE_NEON)
         target_sources(HighPerfCV PRIVATE
             src/filters/grayscale/grayscale_neon.h
             src/filters/grayscale/grayscale_neon.cpp
+            src/filters/brightness/brightness_neon.h
+            src/filters/brightness/brightness_neon.cpp
         )
 
         message(STATUS "ARM NEON optimizations enabled (flags imply native arch).")
