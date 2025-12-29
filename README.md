@@ -6,6 +6,13 @@ The project highlights the transition from $O(N^2)$ naive implementations to hig
 
 ---
 
+## 📸 Application View
+<p align="center">
+  <img src="https://i.imgur.com/nutJafz.jpeg" alt="1">
+</p>
+
+---
+
 ## 🚀 Key Features
 
 * **Cross-Architecture Support:**
