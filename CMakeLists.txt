@@ -167,6 +167,8 @@ if(IS_ARM AND ENABLE_NEON)
             src/filters/brightness/brightness_neon.cpp
             src/filters/gaussian_blur/gaussian_neon.h
             src/filters/gaussian_blur/gaussian_neon.cpp
+            src/filters/median/median_neon.h
+            src/filters/median/median_neon.cpp
         )
 
         message(STATUS "ARM NEON optimizations enabled (flags imply native arch).")

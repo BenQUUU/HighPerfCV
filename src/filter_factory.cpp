@@ -25,6 +25,7 @@
 #include "filters/grayscale/grayscale_neon.h"
 #include "filters/brightness/brightness_neon.h"
 #include "filters/gaussian_blur/gaussian_neon.h"
+#include "filters/median/median_neon.h"
 #endif
 
 #ifdef USE_CUDA
@@ -150,6 +151,10 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
 #ifdef USE_CUDA
         case OptimizationMode::CUDA:
             return std::make_unique<MedianCUDA>(k_size);
+#endif
+#ifdef USE_NEON
+    case OptimizationMode::NEON:
+        return std::make_unique<MedianNEON>(k_size);
 #endif
         default:
             throw std::runtime_error("Unknown optimization mode for Median Filter");
