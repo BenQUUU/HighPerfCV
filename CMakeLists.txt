@@ -82,6 +82,8 @@ set(SRCS
 
         src/filters/sobel/sobel_base.cpp
         src/filters/sobel/sobel_base.h
+        src/filters/sobel/sobel_omp.cpp
+        src/filters/sobel/sobel_omp.h
 )
 
 if(ENABLE_CUDA)
