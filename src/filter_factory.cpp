@@ -14,6 +14,8 @@
 #include "filters/median/median_base.h"
 #include "filters/median/median_omp.h"
 
+#include "filters/sobel/sobel_base.h"
+
 #ifdef USE_AVX2
 #include "filters/gaussian_blur/gaussian_avx.h"
 #include "filters/brightness/brightness_avx.h"
@@ -160,6 +162,13 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
             throw std::runtime_error("Unknown optimization mode for Median Filter");
         }
     }
+    case FilterType::SOBEL:
+        switch (mode) {
+        case OptimizationMode::BASE: 
+            return std::make_unique<SobelBase>();
+        default:
+            throw std::runtime_error("Unknown optimization mode for Sobel");
+    }      
 
     default:
         break;

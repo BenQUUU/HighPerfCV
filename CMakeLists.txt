@@ -77,9 +77,11 @@ set(SRCS
 
         src/filters/median/median_base.cpp
         src/filters/median/median_base.h
-
         src/filters/median/median_omp.cpp
         src/filters/median/median_omp.h
+
+        src/filters/sobel/sobel_base.cpp
+        src/filters/sobel/sobel_base.h
 )
 
 if(ENABLE_CUDA)

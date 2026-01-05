@@ -7,7 +7,8 @@ enum class FilterType {
     GRAYSCALE,
     BRIGHTNESS_CONTRAST,
     GAUSSIAN_BLUR,
-    MEDIAN
+    MEDIAN,
+    SOBEL
 };
 
 enum class OptimizationMode {
@@ -23,6 +24,7 @@ inline FilterType string_to_filter(const std::string& str) {
     if (str == "BRIGHTNESS_CONTRAST") return FilterType::BRIGHTNESS_CONTRAST;
     if (str == "GAUSSIAN_BLUR") return FilterType::GAUSSIAN_BLUR;
     if (str == "MEDIAN") return FilterType::MEDIAN;
+    if (str == "SOBEL") return FilterType::SOBEL;
     throw std::invalid_argument("Unknown filter type: " + str);
 }
 
