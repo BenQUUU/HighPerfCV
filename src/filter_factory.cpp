@@ -22,6 +22,7 @@
 #include "filters/brightness/brightness_avx.h"
 #include "filters/grayscale/grayscale_avx.h"
 #include "filters/median/median_avx.h"
+#include "filters/sobel/sobel_avx.h"
 #endif
 
 #ifdef USE_NEON
@@ -169,6 +170,10 @@ std::unique_ptr<IFilter> FilterFactory::create_filter(FilterType filterType, Opt
             return std::make_unique<SobelBase>();
         case OptimizationMode::OPENMP: 
             return std::make_unique<SobelOpenMP>();
+#ifdef USE_AVX2
+        case OptimizationMode::AVX2:
+            return std::make_unique<SobelAVX>();
+#endif
         default:
             throw std::runtime_error("Unknown optimization mode for Sobel");
     }      

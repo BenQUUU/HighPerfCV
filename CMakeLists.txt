@@ -132,6 +132,8 @@ if(IS_X86 AND ENABLE_AVX2)
                     src/filters/gaussian_blur/gaussian_avx.cpp
                     src/filters/median/median_avx.h
                     src/filters/median/median_avx.cpp
+                    src/filters/sobel/sobel_avx.h
+                    src/filters/sobel/sobel_avx.cpp
             )
             message(STATUS "AVX2 optimizations enabled (MSVC).")
         endif()
