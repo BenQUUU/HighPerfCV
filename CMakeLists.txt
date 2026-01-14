@@ -104,6 +104,10 @@ if(ENABLE_CUDA)
             src/filters/median/median_cuda.cpp
             src/filters/median/median_kernel.h
             src/filters/median/median_kernel.cu
+            src/filters/sobel/sobel_cuda.h
+            src/filters/sobel/sobel_cuda.cpp
+            src/filters/sobel/sobel_kernel.h
+            src/filters/sobel/sobel_kernel.cu
     )
 endif()
 
