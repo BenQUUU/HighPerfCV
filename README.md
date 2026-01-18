@@ -26,19 +26,19 @@ The project highlights the transition from $O(N^2)$ naive implementations to hig
 
 ## 📊 Performance Benchmarks
 
-*Hardware: Intel Core i5-14400F (Host) | NVIDIA GTX 1060 6GB (GPU) | Image: 24 MPx (6000x4000)*
+*Hardware: Intel Core i5-14400F (Host) | NVIDIA RTX 3060 12GB (GPU) | Image: 24 MPx (6000x4000)*
 
 | Algorithm | Mode | Time (ms) | Speedup | Key Optimization Technique |
 | :--- | :--- | :--- | :--- | :--- |
-| **Gaussian Blur** | Base | ~34,000 | 1x | Naive 2D Convolution $O(K^2)$ |
-| | OpenMP | ~1,200 | ~28x | Separable Filter 1D+1D + Multi-threading |
-| | **AVX2** | **555** | **~61x** | **FMA Instructions + Vectorized Vertical Pass** |
-| | **CUDA** | **120** | **~283x** | **`__constant__` Memory for Kernel + Massive Parallelism** |
+| **Gaussian Blur** | Base | ~4500 | 1x | Naive 2D Convolution $O(K^2)$ |
+| | OpenMP | ~540 | ~8x | Separable Filter 1D+1D + Multi-threading |
+| | **AVX2** | **293** | **~15x** | **FMA Instructions + Vectorized Vertical Pass** |
+| | **CUDA** | **106** | **~42x** | **`__constant__` Memory for Kernel + Massive Parallelism** |
 | | | | | |
-| **Median Filter** | Base | ~45,000 | 1x | `std::sort` per pixel (Branch heavy) |
-| | OpenMP | ~6,000 | ~7x | Thread-local buffers to avoid heap contention |
-| | **AVX2** | **154** | **~290x** | **Branchless 3x3 Sorting Network (Min/Max instructions)** |
-| | **CUDA** | **TBD** | **High** | **Register-based Sorting Network** |
+| **Median Filter** | Base | ~62000 | 1x | `std::sort` per pixel (Branch heavy) |
+| | OpenMP | ~26000 | ~2x | Thread-local buffers to avoid heap contention |
+| | **AVX2** | **153** | **~405x** | **Branchless 3x3 Sorting Network (Min/Max instructions)** |
+| | **CUDA** | **102** | **~607x** | **Register-based Sorting Network** |
 
 ---
 
