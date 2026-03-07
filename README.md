@@ -8,7 +8,7 @@ The project highlights the transition from $O(N^2)$ naive implementations to hig
 
 ## 📸 Application View
 <p align="center">
-  <img src="https://i.imgur.com/nutJafz.jpeg" alt="1">
+  <img src="https://i.imgur.com/QHy6nlX.jpeg" alt="1">
 </p>
 
 ---
